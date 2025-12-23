@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Message, Profession, AppTab, UserProfile, CurriculumModule, ModuleResult } from './types';
 import { sendMessageToGemini, ApiError } from './services/geminiService';
@@ -378,14 +379,17 @@ const App: React.FC = () => {
           <div className="relative">
             <div className="absolute inset-0 blur-3xl bg-indigo-500/30 scale-150 animate-pulse"></div>
             <div className="bg-indigo-600 w-24 h-24 md:w-32 md:h-32 rounded-[2rem] md:rounded-[2.5rem] flex items-center justify-center text-white shadow-2xl relative z-10 animate-bounce">
-              <Award size={48} className="md:size-64" />
+              {/* Fix: Replaced invalid md:size prop with Tailwind classes */}
+              <Award className="w-12 h-12 md:w-16 md:h-16" />
             </div>
           </div>
           <div className="mt-8 md:mt-12 text-center space-y-4 relative z-10">
             <div className="flex flex-col md:flex-row items-center justify-center gap-3 mb-2">
-              <Sparkles className="text-yellow-400 animate-spin-slow hidden md:block" size={24} />
+              {/* Fix: Replaced invalid md:size prop with standard Tailwind classes for size if needed */}
+              <Sparkles className="text-yellow-400 animate-spin-slow hidden md:block w-6 h-6 md:w-8 md:h-8" />
               <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter">MASTERY CONFIRMED</h2>
-              <Sparkles className="text-yellow-400 animate-spin-slow hidden md:block" size={24} />
+              {/* Fix: Replaced invalid md:size prop with standard Tailwind classes for size if needed */}
+              <Sparkles className="text-yellow-400 animate-spin-slow hidden md:block w-6 h-6 md:w-8 md:h-8" />
             </div>
             <p className="text-slate-400 font-bold uppercase tracking-[0.4em] text-xs md:text-sm">Professional Workflow Reengineered</p>
           </div>
@@ -432,7 +436,7 @@ const App: React.FC = () => {
                 Lvl {Math.floor(user.badgeCount/4) + 1}
               </span>
             </div>
-            {(activeModule || activeTab !== 'dashboard') && <button onClick={() => { setActiveTab('dashboard'); setActiveModule(null); setIsReviewMode(false); }} className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-slate-800 text-slate-500 hover:text-white flex items-center justify-center transition-all"><X size={16} md:size={18} /></button>}
+            {(activeModule || activeTab !== 'dashboard') && <button onClick={() => { setActiveTab('dashboard'); setActiveModule(null); setIsReviewMode(false); }} className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-slate-800 text-slate-500 hover:text-white flex items-center justify-center transition-all"><X size={16} /></button>}
           </div>
         </header>
 
@@ -444,7 +448,8 @@ const App: React.FC = () => {
               {activeModule && (
                 <div className="bg-[#12192c] border-2 border-indigo-500/20 rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 flex flex-col md:flex-row items-center justify-between shadow-2xl relative overflow-hidden gap-6">
                   <div className="flex items-center gap-4 md:gap-8 relative z-10 w-full md:w-auto">
-                    <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-500 shrink-0"><Target size={24} md:size={32} /></div>
+                    {/* Fix: Replaced invalid md:size prop with responsive Tailwind classes */}
+                    <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-500 shrink-0"><Target className="w-6 h-6 md:w-8 md:h-8" /></div>
                     <div>
                       <h4 className="text-sm md:text-lg font-black text-white uppercase tracking-tight mb-1 md:mb-2">{isReviewMode ? 'Historical Archive' : `Simulation: Step ${moduleStep} of 4`}</h4>
                       <div className="flex gap-1.5 md:gap-2">
@@ -467,7 +472,7 @@ const App: React.FC = () => {
                         {msg.options.map((opt, idx) => (
                           <button key={idx} onClick={() => handleSendMessage(opt)} className="w-full text-left p-4 md:p-5 bg-[#0a0f1e]/50 hover:bg-indigo-600 hover:text-white border border-white/10 rounded-xl transition-all font-bold text-[10px] md:text-xs flex items-center justify-between group">
                             <span>{opt}</span>
-                            <ArrowRight size={14} md:size={16} className="opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
+                            <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
                           </button>
                         ))}
                       </div>
@@ -475,7 +480,8 @@ const App: React.FC = () => {
                   </div>
                 </div>
               ))}
-              {isLoading && <div className="flex justify-start animate-pulse"><div className="bg-[#12192c] p-4 md:p-6 rounded-full border border-white/5"><Loader2 size={20} md:size={24} className="animate-spin text-indigo-500" /></div></div>}
+              {/* Fix: Replaced invalid md:size prop with responsive Tailwind classes */}
+              {isLoading && <div className="flex justify-start animate-pulse"><div className="bg-[#12192c] p-4 md:p-6 rounded-full border border-white/5"><Loader2 className="w-5 h-5 md:w-6 md:h-6 animate-spin text-indigo-500" /></div></div>}
               <div ref={messagesEndRef} />
             </div>
           )}
@@ -540,8 +546,9 @@ const App: React.FC = () => {
              <div className="max-w-4xl mx-auto space-y-8 md:space-y-12 animate-in fade-in">
                 <div className="bg-[#12192c] border border-white/5 rounded-[1.5rem] md:rounded-[3rem] p-6 md:p-12 space-y-6 md:space-y-8 shadow-2xl">
                    <div className="flex items-center gap-4 md:gap-6">
+                      {/* Fix: Replaced invalid md:size prop with responsive Tailwind classes */}
                       <div className="w-12 h-12 md:w-16 md:h-16 bg-yellow-500/10 rounded-xl md:rounded-2xl flex items-center justify-center text-yellow-500 border border-yellow-500/20 shadow-inner shrink-0">
-                        <Activity size={24} md:size={32} />
+                        <Activity className="w-6 h-6 md:w-8 md:h-8" />
                       </div>
                       <h3 className="text-xl md:text-3xl font-black uppercase tracking-tighter text-white">RISE: Operating Procedure</h3>
                    </div>
@@ -605,21 +612,24 @@ const App: React.FC = () => {
              <div className="max-w-4xl mx-auto space-y-6 md:space-y-8 animate-in fade-in">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                    <div className="bg-[#12192c] p-8 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] border border-white/5 space-y-6 shadow-xl">
-                      <div className="w-10 h-10 md:w-12 md:h-12 bg-indigo-500/10 rounded-xl md:rounded-2xl flex items-center justify-center text-indigo-400 border border-indigo-500/20"><Layout size={20} md:size={24}/></div>
+                      {/* Fix: Replaced invalid md:size prop with responsive Tailwind classes */}
+                      <div className="w-10 h-10 md:w-12 md:h-12 bg-indigo-500/10 rounded-xl md:rounded-2xl flex items-center justify-center text-indigo-400 border border-indigo-500/20"><Layout className="w-5 h-5 md:w-6 md:h-6"/></div>
                       <div className="space-y-1">
                          <p className="text-[8px] md:text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Mastery Rank</p>
                          <p className="text-2xl md:text-3xl font-black text-white uppercase tracking-tighter">Level {Math.floor(user.badgeCount/4) + 1}</p>
                       </div>
                    </div>
                    <div className="bg-[#12192c] p-8 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] border border-white/5 space-y-6 shadow-xl">
-                      <div className="w-10 h-10 md:w-12 md:h-12 bg-yellow-500/10 rounded-xl md:rounded-2xl flex items-center justify-center text-yellow-500 border border-yellow-500/20"><Clock size={20} md:size={24}/></div>
+                      {/* Fix: Replaced invalid md:size prop with responsive Tailwind classes */}
+                      <div className="w-10 h-10 md:w-12 md:h-12 bg-yellow-500/10 rounded-xl md:rounded-2xl flex items-center justify-center text-yellow-500 border border-yellow-500/20"><Clock className="w-5 h-5 md:w-6 md:h-6"/></div>
                       <div className="space-y-1">
                          <p className="text-[8px] md:text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Total Training</p>
                          <p className="text-2xl md:text-3xl font-black text-white uppercase tracking-tighter">{user.badgeCount * 45} mins</p>
                       </div>
                    </div>
                    <div className="bg-[#12192c] p-8 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] border border-white/5 space-y-6 shadow-xl">
-                      <div className="w-10 h-10 md:w-12 md:h-12 bg-green-500/10 rounded-xl md:rounded-2xl flex items-center justify-center text-green-500 border border-green-500/20"><Activity size={20} md:size={24}/></div>
+                      {/* Fix: Replaced invalid md:size prop with responsive Tailwind classes */}
+                      <div className="w-10 h-10 md:w-12 md:h-12 bg-green-500/10 rounded-xl md:rounded-2xl flex items-center justify-center text-green-500 border border-green-500/20"><Activity className="w-5 h-5 md:w-6 md:h-6"/></div>
                       <div className="space-y-1">
                          <p className="text-[8px] md:text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Accreditation</p>
                          <p className="text-2xl md:text-3xl font-black text-white uppercase tracking-tighter">{(user.badgeCount * 1.5).toFixed(1)} CPD</p>
@@ -629,7 +639,8 @@ const App: React.FC = () => {
 
                 <div className="bg-[#12192c] border border-white/5 rounded-[2rem] md:rounded-[3.5rem] p-8 md:p-12 space-y-8 md:space-y-10 shadow-3xl">
                    <div className="flex items-center gap-4 md:gap-6">
-                      <Zap size={24} md:size={32} className="text-indigo-500 shrink-0" />
+                      {/* Fix: Replaced invalid md:size prop with responsive Tailwind classes */}
+                      <Zap className="text-indigo-500 shrink-0 w-6 h-6 md:w-8 md:h-8" />
                       <h4 className="text-xl md:text-2xl font-black text-white uppercase tracking-tighter">Internalization Analytics</h4>
                    </div>
                    
@@ -667,7 +678,8 @@ const App: React.FC = () => {
                   className="w-full bg-transparent p-4 md:p-6 pr-20 md:pr-32 outline-none resize-none min-h-[60px] md:min-h-[100px] text-sm md:text-lg font-medium text-white placeholder:text-slate-700" 
                   onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSendMessage())} 
                 />
-                <button type="submit" disabled={isLoading || !input.trim()} className="absolute right-4 md:right-8 bottom-4 md:bottom-8 bg-indigo-600 text-white w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl flex items-center justify-center shadow-xl shadow-indigo-600/20 active:scale-95 hover:bg-indigo-500 transition-all disabled:opacity-50"><Send size={20} md:size={24} /></button>
+                {/* Fix: Replaced invalid md:size prop with responsive Tailwind classes */}
+                <button type="submit" disabled={isLoading || !input.trim()} className="absolute right-4 md:right-8 bottom-4 md:bottom-8 bg-indigo-600 text-white w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl flex items-center justify-center shadow-xl shadow-indigo-600/20 active:scale-95 hover:bg-indigo-500 transition-all disabled:opacity-50"><Send className="w-5 h-5 md:w-6 md:h-6" /></button>
               </div>
             </form>
           </div>
