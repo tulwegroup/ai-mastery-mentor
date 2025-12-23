@@ -1,56 +1,52 @@
-
 import React from 'react';
+import { ShieldCheck, Database, Zap, Target, Coffee } from 'lucide-react';
 
 const RISEExplainer: React.FC = () => {
-  const items = [
-    {
-      letter: 'R',
-      name: 'Role',
-      desc: 'Assign a high-level professional persona.',
-      example: '"Senior Compliance Officer at Bank of Ghana"'
-    },
-    {
-      letter: 'I',
-      name: 'Input',
-      desc: 'Provide data, documents, or specific context.',
-      example: 'NPA Regulation 2024 (PDF)'
-    },
-    {
-      letter: 'S',
-      name: 'Steps',
-      desc: 'Define the step-by-step chain of logic.',
-      example: '1. Scan for risks. 2. Compare with policy.'
-    },
-    {
-      letter: 'E',
-      name: 'Expectation',
-      desc: 'Define the exact format and tone.',
-      example: 'A 3-column table with risk levels.'
-    }
-  ];
-
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-      <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
-        The R-I-S-E Framework
-      </h3>
-      <div className="grid grid-cols-1 gap-4">
-        {items.map((item) => (
-          <div key={item.letter} className="flex gap-4 p-3 rounded-lg hover:bg-slate-50 transition-colors">
-            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center font-bold text-indigo-700 text-lg">
-              {item.letter}
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-slate-700">{item.name}</span>
-              </div>
-              <p className="text-sm text-slate-500 mb-1">{item.desc}</p>
-              <code className="text-xs bg-slate-100 px-2 py-0.5 rounded text-indigo-600 border border-slate-200 block mt-1 italic">
-                {item.example}
-              </code>
+    <div className="bg-[#12192c] border border-white/5 rounded-[3rem] p-12 shadow-2xl space-y-12 relative overflow-hidden group">
+      <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-600/5 rounded-full blur-3xl -mr-40 -mt-40"></div>
+      
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
+        <div className="w-24 h-24 rounded-[2rem] bg-indigo-600/10 flex items-center justify-center text-indigo-500 shrink-0 shadow-inner">
+          <Coffee size={44} />
+        </div>
+        <div className="space-y-4">
+          <h3 className="text-4xl font-black text-white uppercase tracking-tight">
+            THE <span className="text-indigo-400">RISE</span> PROTOCOL
+          </h3>
+          <div className="space-y-4 max-w-2xl">
+            <p className="text-slate-200 text-lg font-semibold leading-relaxed">
+              Talking to AI is like working with a brilliant, but literal, junior associate. RISE is the professional standard for elite prompt engineering.
+            </p>
+            <p className="text-slate-400 text-sm font-medium leading-relaxed border-l-2 border-indigo-500/30 pl-6 py-1">
+              <span className="text-indigo-400 font-bold uppercase tracking-widest text-[10px] block mb-1">Definition</span>
+              Prompt Engineering is the specialized practice of designing precise, structured instructions that command AI models to perform complex professional tasks with surgical accuracy, rather than relying on generic conversation.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* R-I-S-E Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 relative z-10">
+        {[
+          { l: 'R', n: 'ROLE // THE PERSONA', d: 'Who is the AI? A High Court Judge? A Risk Auditor? Define its authority.', icon: <ShieldCheck size={20}/> },
+          { l: 'I', n: 'INPUT // THE INGREDIENTS', d: 'What data are we using? Upload case files or paste financial ledger facts.', icon: <Database size={20}/> },
+          { l: 'S', n: 'STEPS // THE RECIPE', d: 'What is the logic flow? 1. Extract, 2. Validate, 3. Execute.', icon: <Zap size={20}/> },
+          { l: 'E', n: 'EXPECTATION // THE RESULT', d: 'How should it look? A legal table? A board-ready summary brief?', icon: <Target size={20}/> }
+        ].map((item, i) => (
+          <div key={i} className="bg-[#0a0f1e] p-8 rounded-[2.5rem] border border-white/5 hover:border-indigo-500/20 transition-all group/card">
+            <div className="text-indigo-500 mb-8 group-hover/card:scale-110 transition-transform">{item.icon}</div>
+            <div className="space-y-6">
+               <h4 className="text-white font-black uppercase text-3xl leading-none">{item.l}</h4>
+               <div className="space-y-4">
+                 <p className="text-indigo-400 text-[10px] font-black uppercase tracking-widest leading-tight">
+                   {item.n}
+                 </p>
+                 <p className="text-slate-500 text-xs leading-relaxed font-medium">
+                   {item.d}
+                 </p>
+               </div>
             </div>
           </div>
         ))}
