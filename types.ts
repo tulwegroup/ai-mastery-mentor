@@ -1,25 +1,36 @@
 
-export type Profession = 'Journalist' | 'Banker' | 'Lawyer' | 'Executive' | 'Accountant' | 'Other';
+export type Profession = 'Lawyer' | 'Banker' | 'Journalist' | 'Accountant' | 'Executive';
+export type UserRole = 'User' | 'Admin';
 
-export interface ModuleBadge {
-  code: string;
-  trackId: number;
+export interface ModuleResult {
   moduleId: number;
+  score: number;
+  feedback: string;
+  timestamp: number;
+  history: { role: 'user' | 'model'; text: string }[];
 }
 
-export interface UserSession {
-  userId: string;
+export interface UserProfile {
+  id: string;
+  name: string;
   profession: Profession;
-  badges: string[];
-  currentTrack: number;
-  currentModule: number;
+  email: string;
+  role: UserRole;
+  badgeCount: number;
+  lastLogin: number;
+  completedModules: number[];
+  moduleResults: Record<number, ModuleResult>;
 }
 
 export interface Message {
   role: 'user' | 'model';
-  parts: { text: string; inlineData?: { data: string; mimeType: string } }[];
+  parts: { text: string }[];
   timestamp: number;
+  isModuleStep?: boolean;
+  options?: string[];
 }
+
+export type AppTab = 'dashboard' | 'treasury' | 'accreditation' | 'corporate' | 'admin' | 'review-protocol' | 'mastery-archive' | 'current-status';
 
 export interface LibraryPrompt {
   id: string;
@@ -28,11 +39,11 @@ export interface LibraryPrompt {
   prompt: string;
 }
 
-export type AppTab = 'learning' | 'library' | 'accreditation' | 'pricing';
-
-export interface PricingTier {
-  name: string;
-  description: string;
-  price: string;
-  features: string[];
+export interface CurriculumModule {
+  id: number;
+  track: number;
+  cat: string;
+  title: string;
+  desc: string;
+  areas: string[];
 }
