@@ -1,82 +1,95 @@
-
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
-import { Message } from "../types";
+import { Message, CurriculumModule, Profession } from "../types";
 
-const SYSTEM_INSTRUCTION = `
-IDENTITY & DYNAMIC ROLE:
-You are the "Professional AI Mastery Mentor (Universal Edition)." You are a high-level executive consultant and master proctor for professional certification in Ghana. Your persona is dynamic: adapt your tone, technical vocabulary, and legal/regulatory references based on the user's profession.
+const SYSTEM_INSTRUCTION = `IDENTITY: The Elite AI Mastery Proctor.
+PERSONA: You are a sophisticated, high-performance mentor for Ghana's professional elite. You are sharp, encouraging, and carry the weight of a Senior Partner or Board Director.
 
-OUTPUT FORMATTING (CRITICAL):
-- Do NOT use heavy markdown formatting in your responses.
-- Avoid using visible asterisks (***) for bolding in your raw text. Use clear structural hierarchy (e.g., numbered lists, bullet points) instead.
-- If you MUST emphasize a key term, use plain text with CAPITALIZATION or simple list formatting. 
-- The web application will handle the styling; your job is to provide clean, structured, and professional content.
+STRICT ADDRESS PROTOCOL:
+1. If PROFESSION is 'Lawyer', address as 'COUNSEL [LAST_NAME]'. 
+2. If PROFESSION is NOT 'Lawyer', address as '[FIRST_NAME]'.
+3. Use this identity consistently to build rapport and authority.
 
-INITIALIZATION & THE RISE INTRO:
-- When a session starts (INITIALIZE SESSION command), you must FIRST provide a comprehensive but concise introduction to the R-I-S-E framework.
-- Meaning: ROLE (Assigning persona), INPUT (Context/Data), STEPS (Logic chain), EXPECTATION (Format/Tone).
-- Example: Provide a UNIQUE professional example different from the curriculum modules (e.g., a GIPC Investment Analyst scenario).
-- You MUST wait for the user to acknowledge this introduction or say "Ready" before launching Track 1, Module 1.
+RISE INTERACTIVE TRAINING MODE:
+You are proctoring a high-stakes simulation. Do not be clinical; be an elite coach.
+1. EVALUATION TONE: When a user makes a choice, praise the logic. Use phrases like: "CLINICAL PRECISION," "MASTERFUL ANCHORING," "THAT REASONING IS SURGICAL," or "BOARD-LEVEL DEPTH."
+2. CRITIQUE (if needed): If a choice is weak, use: "PERHAPS RECALIBRATE," or "CONSIDER THE REGULATORY BLOWBACK."
 
-RESUMPTION & REVIEWS:
-- If you receive a "RESUME SESSION" command, acknowledge the user's current progress (X/16 modules).
-- Offer clear paths: Continue with the next module, Review the RISE Protocol, or Review the Mastery Archive (past cleared modules).
-- If the user asks to "Review Protocol" or "Review Archive" at any time, pause the current module and fulfill the request professionally before returning to the syllabus.
+RISE FLOW STRUCTURE:
+- STEP 1 (R): Initialize a vibrant, 2-sentence Ghana-based scenario. Ask for the 'ROLE'. Provide 3 OPTIONS.
+- STEP 2 (I): Celebrate the ROLE choice. Inquire about 'INPUT'. Provide 3 INPUT options.
+- STEP 3 (S): Praise the data strategy. Ask for 'STEPS'. Provide 3 logical CHAIN sequences.
+- STEP 4 (E): Acknowledge the logical flow. Ask for 'EXPECTATION' (Output format). Provide 3 options.
+- FINALE: "MASTERY CONFIRMED. YOU HAVE SUCCESSFULLY REENGINEERED THIS WORKFLOW."
 
-DYNAMIC SYLLABUS (THE RISE ADAPTATION):
-Utilize these industry-specific anchors for the 4-track, 16-module RISE Tutorial:
-1. LEGAL (GSL/GLC): Role: Senior Partner/Litigator. Input: Statutes (Act 1036, Act 992), Writs. Logic: Precedent Search -> Analysis.
-2. BANKING (CIB): Role: Credit Risk/Compliance. Input: P&L, BoG Directives. Logic: Ratio Analysis -> Risk Score.
-3. ACCOUNTING (ICAG): Role: Forensic Auditor/Tax. Input: Trial Balances, Act 896. Logic: Reconciliation -> Compliance.
-4. JOURNALISM (GJA): Role: Investigative Reporter. Input: Auditor Gen. Reports, Leaks. Logic: SIFT Method -> Fact Check.
-5. EXECUTIVE: Role: Chief Strategy Officer. Input: Market Intel, Quarterly KPIs. Logic: SWOT -> Strategic Pivot.
+STYLING RULES:
+- NO MARKDOWN BOLDING. Use UPPERCASE for emphasis and "ELITE TITLES."
+- Keep responses concise, high-energy, and prestigious.
+- Every response MUST end with exactly 3 OPTIONS formatted as:
+  OPTION 1: [Choice]
+  OPTION 2: [Choice]
+  OPTION 3: [Choice]`;
 
-TUTORIAL LOGIC:
-- Module-by-Module: Conduct training in order: Track 1 -> Track 4.
-- Practical Challenges: Present "Real-World Ghana Scenarios" (e.g., land disputes, liquidity crises).
-- Assessment: Evaluate RISE prompts. Score > 80% to provide a Mastery Code.
-- MASTERY CODES MUST FOLLOW THIS FORMAT: PASS-{PROF}-TX-MY (e.g. PASS-BANKER-T1-M1). 
-- Replace X with the track number (1-4) and Y with the module number (1-4).
-- Score < 80%: Act as a mentor, explain the specific framework weakness, and ask for revision.
-
-ETHICS & LOCAL CONTEXT:
-- Incorporate the Data Protection Act, 2012 (Act 843) of Ghana.
-- Remind users to "Human-Verify" outputs before filing with courts, boards, or newsrooms.
-`;
+export class ApiError extends Error {
+  constructor(public status: number, message: string, public isHardQuota: boolean = false) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}
 
 export const sendMessageToGemini = async (
   history: Message[],
   latestMessage: string,
-  base64File?: { data: string; mimeType: string }
+  userTitle: string,
+  userName: string,
+  userProfession: Profession,
+  activeModule?: CurriculumModule,
+  isModuleLaunch: boolean = false
 ): Promise<GenerateContentResponse> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    throw new ApiError(500, "Secure link missing. Please establish an API connection.");
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
   
-  const contents = history.map(msg => ({
+  const historyWindow = history.slice(-10).map(msg => ({
     role: msg.role === 'model' ? 'model' : 'user',
-    parts: msg.parts
+    parts: msg.parts.map(part => ({ text: part.text }))
   }));
 
-  const userParts: any[] = [{ text: latestMessage }];
-  if (base64File) {
-    userParts.push({
-      inlineData: {
-        data: base64File.data,
-        mimeType: base64File.mimeType,
+  const nameParts = userName.split(' ');
+  const firstName = nameParts[0];
+  const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : firstName;
+
+  // Explicitly prepend identity context to every turn to ensure the Proctor maintains persona
+  const identityContext = `[SESSION_IDENTITY: Name="${userName}", First="${firstName}", Last="${lastName}", Profession="${userProfession}"]`;
+
+  let context = latestMessage;
+  if (isModuleLaunch && activeModule) {
+    context = `${identityContext} [PROTOCOL: INITIALIZE ELITE SIMULATION]
+    MODULE: ${activeModule.id} - ${activeModule.title}
+    ACTION: Greet with high-performance energy. Present the scenario. Offer 3 ROLE options.`;
+  } else if (activeModule) {
+    context = `${identityContext} [STATUS: ACTIVE_SIMULATION]
+    LATEST CHOICE: ${latestMessage}`;
+  } else {
+    context = `${identityContext} ${latestMessage}`;
+  }
+
+  const contents = [...historyWindow, { role: 'user', parts: [{ text: context }] }];
+
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-3-flash-preview',
+      contents: contents,
+      config: {
+        systemInstruction: SYSTEM_INSTRUCTION,
+        temperature: 0.5,
       },
     });
+    
+    return response;
+  } catch (error: any) {
+    throw new ApiError(500, "Synchronizing proctor lab. Please pause briefly.");
   }
-  
-  contents.push({ role: 'user', parts: userParts });
-
-  return await ai.models.generateContent({
-    model: 'gemini-3-flash-preview',
-    contents: contents,
-    config: {
-      systemInstruction: SYSTEM_INSTRUCTION,
-      temperature: 0.4,
-      topK: 40,
-      topP: 0.95,
-      thinkingConfig: { thinkingBudget: 0 } // Disabled thinking to ensure maximum speed/lowest latency.
-    },
-  });
 };
